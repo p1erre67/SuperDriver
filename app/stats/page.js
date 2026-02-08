@@ -19,7 +19,7 @@ export default function Stats() {
   return (
     <main className="h-screen flex items-center justify-center text-center">
       <div>
-        <h1 className="text-2xl font-bold mb-2">Stats 🚗</h1>
+        <h1 className="text-2xl font-bold mb-2">Notes 🚗</h1>
         <p>Moyenne : ⭐ {avg}</p>
         <p>Trajets notés : {count}</p>
       </div>

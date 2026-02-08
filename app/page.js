@@ -4,13 +4,24 @@ import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 
 export default function Home() {
+  const [name, setName] = useState('')
   const [score, setScore] = useState(5)
   const [comment, setComment] = useState('')
+  const [error, setError] = useState('')
   const [sent, setSent] = useState(false)
 
   const submit = async () => {
-    await supabase.from('ratings').insert({ score, comment })
-    setSent(true)
+    if (!name.trim()) {
+      setError('Ton nom est obligatoire 😅')
+      return
+    }
+
+    const { error } = await supabase.from('ratings').insert({ name, score, comment })
+    if (error) {
+      setError('Erreur lors de l’envoi')
+    } else {
+      setSent(true)
+    }
   }
 
   if (sent) {
@@ -18,7 +29,7 @@ export default function Home() {
       <main className="h-screen flex items-center justify-center text-center p-6">
         <div>
           <p className="text-4xl mb-4">🚗✨</p>
-          <h1 className="text-xl font-bold">Merci pour la note !</h1>
+          <h1 className="text-xl font-bold">Merci {name} pour la note !</h1>
         </div>
       </main>
     )
@@ -26,9 +37,16 @@ export default function Home() {
 
   return (
     <main className="h-screen flex flex-col justify-center p-6 max-w-md mx-auto">
-      <h1 className="text-2xl font-bold text-center mb-6">
-        Note le trajet
-      </h1>
+      <h1 className="text-2xl font-bold text-center mb-6">Note le trajet</h1>
+
+      <input
+        type="text"
+        placeholder="Ton nom *"
+        value={name}
+        onChange={e => { setName(e.target.value); setError('') }}
+        className="border rounded p-3 mb-4 w-full"
+        required
+      />
 
       <div className="flex justify-center gap-2 mb-6">
         {[1,2,3,4,5].map(n => (
@@ -48,6 +66,8 @@ export default function Home() {
         value={comment}
         onChange={e => setComment(e.target.value)}
       />
+
+      {error && <p className="text-red-500 mb-4">{error}</p>}
 
       <button
         onClick={submit}
